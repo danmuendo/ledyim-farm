@@ -77,7 +77,29 @@ async function main() {
       species: "goat",
       sex: "female",
       dateOfBirth: new Date("2022-01-28"),
-      status: "active"
+      status: "active",
+      goatBreedingStatus: "pregnant",
+      exposedToBuckId: buck.id,
+      lastBredDate: new Date("2026-07-08"),
+      expectedKiddingDate: new Date("2026-12-05"),
+      pregnancyCheckDate: new Date("2026-09-10"),
+      breedingNotes: "Confirmed pregnant after buck exposure. Watch body condition."
+    }
+  });
+
+  const delayedDoe = await prisma.animal.create({
+    data: {
+      name: "Zuri",
+      tagCode: "G-004",
+      species: "goat",
+      sex: "female",
+      dateOfBirth: new Date("2021-11-14"),
+      status: "active",
+      goatBreedingStatus: "delayed",
+      exposedToBuckId: buck.id,
+      lastBredDate: new Date("2026-05-22"),
+      pregnancyCheckDate: new Date("2026-08-22"),
+      breedingNotes: "Repeated heat after exposure. Needs observation and possible vet check."
     }
   });
 
@@ -90,7 +112,8 @@ async function main() {
       dateOfBirth: new Date("2024-06-02"),
       sireId: buck.id,
       damId: doe.id,
-      status: "active"
+      status: "active",
+      goatBreedingStatus: "open"
     }
   });
 
@@ -135,6 +158,14 @@ async function main() {
         dosage: "Oral by weight",
         administeredBy: "Farm owner",
         nextDueDate: new Date("2026-11-30")
+      },
+      {
+        animalId: delayedDoe.id,
+        date: new Date("2026-08-23"),
+        type: "checkup",
+        description: "Follow-up after delayed conception flag.",
+        administeredBy: "Farm owner",
+        nextDueDate: new Date("2026-09-23")
       }
     ]
   });

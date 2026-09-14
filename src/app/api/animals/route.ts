@@ -1,7 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { animalSchema } from "@/lib/validation";
+import { animalSchema, normalizeBreedingData } from "@/lib/validation";
 import { formDataToRecord, saveUploadedImage } from "@/lib/uploads";
 
 export const dynamic = "force-dynamic";
@@ -9,6 +9,7 @@ export const dynamic = "force-dynamic";
 const animalInclude = {
   sire: true,
   dam: true,
+  exposedToBuck: true,
   treatments: { orderBy: { date: "desc" as const } },
   sired: { orderBy: [{ species: "asc" as const }, { dateOfBirth: "asc" as const }] },
   birthed: { orderBy: [{ species: "asc" as const }, { dateOfBirth: "asc" as const }] }
@@ -38,7 +39,7 @@ export async function GET(request: NextRequest) {
   const animals = await prisma.animal.findMany({
     where,
     orderBy: [{ species: "asc" }, { dateOfBirth: "asc" }, { tagCode: "asc" }],
-    include: { sire: true, dam: true }
+    include: { sire: true, dam: true, exposedToBuck: true }
   });
 
   return NextResponse.json(animals);
@@ -49,7 +50,7 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData();
     const file = formData.get("photo") instanceof File ? (formData.get("photo") as File) : null;
     const photoUrl = await saveUploadedImage(file);
-    const parsed = animalSchema.parse({ ...formDataToRecord(formData), photoUrl });
+    const parsed = normalizeBreedingData(animalSchema.parse({ ...formDataToRecord(formData), photoUrl }));
 
     if (parsed.sireId && parsed.sireId === parsed.damId) {
       return NextResponse.json({ error: "Sire and dam must be different animals." }, { status: 400 });

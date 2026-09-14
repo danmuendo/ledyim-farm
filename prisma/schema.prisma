@@ -32,6 +32,15 @@ enum TreatmentType {
   other
 }
 
+enum GoatBreedingStatus {
+  open
+  exposed
+  pregnant
+  delayed
+  kidded
+  resting
+}
+
 model Animal {
   id          String         @id @default(cuid())
   name        String?
@@ -43,12 +52,20 @@ model Animal {
   sireId      String?
   damId       String?
   status      AnimalStatus   @default(active)
+  goatBreedingStatus GoatBreedingStatus?
+  lastBredDate DateTime?
+  exposedToBuckId String?
+  expectedKiddingDate DateTime?
+  pregnancyCheckDate DateTime?
+  breedingNotes String?
   notes       String?
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
 
   sire      Animal? @relation("SireChildren", fields: [sireId], references: [id], onDelete: SetNull)
   dam       Animal? @relation("DamChildren", fields: [damId], references: [id], onDelete: SetNull)
+  exposedToBuck Animal? @relation("BuckExposure", fields: [exposedToBuckId], references: [id], onDelete: SetNull)
+  buckExposures Animal[] @relation("BuckExposure")
   sired     Animal[] @relation("SireChildren")
   birthed   Animal[] @relation("DamChildren")
   treatments TreatmentRecord[]
@@ -59,6 +76,9 @@ model Animal {
   @@index([species])
   @@index([sireId])
   @@index([damId])
+  @@index([exposedToBuckId])
+  @@index([goatBreedingStatus])
+  @@index([expectedKiddingDate])
   @@index([status])
 }
 
@@ -109,3 +129,4 @@ model BirthRecordOffspring {
   @@id([birthRecordId, animalId])
   @@index([animalId])
 }
+

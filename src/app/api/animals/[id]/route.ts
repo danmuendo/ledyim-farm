@@ -1,7 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { animalSchema } from "@/lib/validation";
+import { animalSchema, normalizeBreedingData } from "@/lib/validation";
 import { formDataToRecord, saveUploadedImage } from "@/lib/uploads";
 
 export const dynamic = "force-dynamic";
@@ -9,6 +9,7 @@ export const dynamic = "force-dynamic";
 const pedigreeInclude = {
   sire: { include: { sire: { include: { sire: true, dam: true } }, dam: { include: { sire: true, dam: true } } } },
   dam: { include: { sire: { include: { sire: true, dam: true } }, dam: { include: { sire: true, dam: true } } } },
+  exposedToBuck: true,
   treatments: { orderBy: { date: "desc" as const } },
   sired: { orderBy: [{ species: "asc" as const }, { dateOfBirth: "asc" as const }] },
   birthed: { orderBy: [{ species: "asc" as const }, { dateOfBirth: "asc" as const }] }
@@ -28,10 +29,10 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ i
     const file = formData.get("photo") instanceof File ? (formData.get("photo") as File) : null;
     const uploadedUrl = await saveUploadedImage(file);
     const currentPhotoUrl = formData.get("currentPhotoUrl")?.toString() || null;
-    const parsed = animalSchema.parse({ ...formDataToRecord(formData), photoUrl: uploadedUrl || currentPhotoUrl });
+    const parsed = normalizeBreedingData(animalSchema.parse({ ...formDataToRecord(formData), photoUrl: uploadedUrl || currentPhotoUrl }));
 
-    if (parsed.sireId === id || parsed.damId === id) {
-      return NextResponse.json({ error: "An animal cannot be its own parent." }, { status: 400 });
+    if (parsed.sireId === id || parsed.damId === id || parsed.exposedToBuckId === id) {
+      return NextResponse.json({ error: "An animal cannot be its own parent or breeding buck." }, { status: 400 });
     }
     if (parsed.sireId && parsed.sireId === parsed.damId) {
       return NextResponse.json({ error: "Sire and dam must be different animals." }, { status: 400 });

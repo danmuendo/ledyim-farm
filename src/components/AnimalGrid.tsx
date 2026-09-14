@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Search, SlidersHorizontal } from "lucide-react";
 import { useMemo, useState } from "react";
 import { AnimalOption } from "@/lib/types";
-import { animalLabel, formatDate, speciesRank } from "@/lib/format";
+import { animalLabel, breedingStatusLabel, formatDate, speciesRank } from "@/lib/format";
 
 export function AnimalGrid({ animals }: { animals: AnimalOption[] }) {
   const [species, setSpecies] = useState("");
@@ -49,7 +49,7 @@ export function AnimalGrid({ animals }: { animals: AnimalOption[] }) {
           <Link key={animal.id} href={`/animals/${animal.id}`} className="group overflow-hidden rounded-xl border border-white/80 bg-white/90 shadow-soft ring-1 ring-field-soil/5 transition hover:-translate-y-1 hover:shadow-lift">
             <div className="relative aspect-[4/3] bg-field-mist">
               {animal.photoUrl ? <Image src={animal.photoUrl} alt={animalLabel(animal)} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw" className="object-cover transition duration-300 group-hover:scale-105" /> : <div className="flex h-full flex-col items-center justify-center gap-2 bg-gradient-to-br from-field-mist to-white text-field-moss"><span className="text-4xl font-black uppercase">{animal.species.slice(0, 1)}</span><span className="text-xs font-bold uppercase tracking-[0.18em]">{animal.species}</span></div>}
-              <div className="absolute left-3 top-3 flex gap-2"><span className="badge bg-white/90">{animal.species}</span><span className="badge-warm bg-white/90">{animal.status}</span></div>
+              <div className="absolute left-3 top-3 flex gap-2"><span className="badge bg-white/90">{animal.species}</span><span className="badge-warm bg-white/90">{animal.status}</span>{animal.species === "goat" && animal.sex === "female" && animal.goatBreedingStatus && <span className="badge bg-white/90">{breedingStatusLabel(animal.goatBreedingStatus)}</span>}</div>
             </div>
             <div className="space-y-3 p-4">
               <div><h2 className="text-lg font-black leading-tight text-field-soil">{animal.name || animal.tagCode}</h2>{animal.name && <p className="text-sm font-semibold text-field-moss">{animal.tagCode}</p>}</div>
@@ -62,3 +62,4 @@ export function AnimalGrid({ animals }: { animals: AnimalOption[] }) {
     </div>
   );
 }
+

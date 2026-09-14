@@ -12,6 +12,7 @@ A small full-stack livestock record tool for cattle and goats, built with Next.j
 - Pedigree view showing parents, grandparents, and great-grandparents where data exists
 - Offspring list for animals linked as sire or dam
 - Birth records data model and API for multi-offspring events
+- Goat breeding tracker for pregnant, exposed, delayed, open, kidded, and resting does
 
 ## Requirements
 
@@ -106,3 +107,4 @@ In local development without `BLOB_READ_WRITE_TOKEN`, uploaded animal photos are
 ## Notes
 
 The seed script resets the livestock, treatment, and birth-record tables before inserting sample data. Use it only for local development data you are comfortable replacing.
+

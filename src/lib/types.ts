@@ -1,3 +1,5 @@
+export type GoatBreedingStatus = "open" | "exposed" | "pregnant" | "delayed" | "kidded" | "resting";
+
 export type AnimalOption = {
   id: string;
   name: string | null;
@@ -7,6 +9,12 @@ export type AnimalOption = {
   dateOfBirth: string | Date;
   photoUrl?: string | null;
   status?: "active" | "sold" | "deceased";
+  goatBreedingStatus?: GoatBreedingStatus | null;
+  lastBredDate?: string | Date | null;
+  exposedToBuckId?: string | null;
+  expectedKiddingDate?: string | Date | null;
+  pregnancyCheckDate?: string | Date | null;
+  breedingNotes?: string | null;
 };
 
 export type Treatment = {
