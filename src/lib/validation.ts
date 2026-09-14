@@ -1,7 +1,17 @@
 import { z } from "zod";
 
-const optionalString = z.string().trim().optional().transform((value) => value || null);
-const optionalDate = z.string().trim().optional().transform((value) => value ? new Date(value) : null);
+const emptyToNull = (value: unknown) => {
+  if (value === null || value === undefined) return null;
+  if (typeof value === "string" && value.trim() === "") return null;
+  return value;
+};
+
+const optionalString = z.preprocess(emptyToNull, z.string().trim().nullable());
+const optionalDate = z.preprocess(emptyToNull, z.coerce.date().nullable());
+const optionalGoatBreedingStatus = z.preprocess(
+  emptyToNull,
+  z.enum(["open", "exposed", "pregnant", "delayed", "kidded", "resting"]).nullable()
+);
 
 export const animalSchema = z.object({
   name: optionalString,
@@ -13,7 +23,7 @@ export const animalSchema = z.object({
   sireId: optionalString,
   damId: optionalString,
   status: z.enum(["active", "sold", "deceased"]).default("active"),
-  goatBreedingStatus: z.enum(["open", "exposed", "pregnant", "delayed", "kidded", "resting"]).optional().transform((value) => value || null),
+  goatBreedingStatus: optionalGoatBreedingStatus,
   lastBredDate: optionalDate,
   exposedToBuckId: optionalString,
   expectedKiddingDate: optionalDate,
