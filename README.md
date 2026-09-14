@@ -6,7 +6,7 @@ A small full-stack livestock record tool for cattle and goats, built with Next.j
 
 - Dashboard with cattle/goat counts, upcoming treatment reminders, and recently added animals
 - Animal listing with photo cards, species/sex/status filters, and name/tag search
-- Add and edit animal details with local photo uploads to `public/uploads`
+- Add and edit animal details with photo uploads
 - Unique ear tag validation backed by the database
 - Treatment records with add, edit, delete, and next due dates
 - Pedigree view showing parents, grandparents, and great-grandparents where data exists
@@ -25,9 +25,10 @@ A small full-stack livestock record tool for cattle and goats, built with Next.j
 
 ```bash
 DATABASE_URL="postgresql://USER:PASSWORD@HOST/neondb?sslmode=require&channel_binding=require"
+BLOB_READ_WRITE_TOKEN=""
 ```
 
-The current local `.env` is configured to use your Neon database.
+The current local `.env` is configured to use your Neon database. `BLOB_READ_WRITE_TOKEN` is optional locally; without it, uploads are stored under `public/uploads`.
 
 2. Install dependencies:
 
@@ -54,6 +55,22 @@ npm run dev
 ```
 
 Open `http://localhost:3000`.
+
+## Deploy To Vercel
+
+1. Import `https://github.com/danmuendo/ledyim-farm.git` in the Vercel dashboard.
+2. Keep the framework preset as Next.js.
+3. Add these Environment Variables for Production and Preview:
+
+```bash
+DATABASE_URL="postgresql://USER:PASSWORD@HOST/neondb?sslmode=require&channel_binding=require"
+BLOB_READ_WRITE_TOKEN="your-vercel-blob-token"
+```
+
+4. Create or connect a Vercel Blob store for persistent animal photos.
+5. Deploy. Future pushes to `main` will create production deployments.
+
+The database migration has already been applied to your Neon database, and the seed script has already been run once. Do not run the seed script on production again unless you want it to reset the animal, treatment, and birth-record tables.
 
 ## Optional Local PostgreSQL
 
@@ -84,7 +101,7 @@ For a hosted database, prefer `npx prisma migrate deploy` when applying checked-
 
 ## Image Uploads
 
-Uploaded animal photos are stored locally under `public/uploads`. The database stores the public path, for example `/uploads/filename.webp`.
+In local development without `BLOB_READ_WRITE_TOKEN`, uploaded animal photos are stored under `public/uploads`. On Vercel, set `BLOB_READ_WRITE_TOKEN` so uploaded files are stored in Vercel Blob and remain available after deployments.
 
 ## Notes
 

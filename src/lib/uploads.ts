@@ -1,3 +1,4 @@
+import { put } from "@vercel/blob";
 import { mkdir, writeFile } from "fs/promises";
 import path from "path";
 
@@ -10,9 +11,18 @@ export async function saveUploadedImage(file: File | null): Promise<string | nul
     throw new Error("Only JPG, PNG, WEBP, and GIF uploads are supported.");
   }
 
-  await mkdir(uploadDir, { recursive: true });
   const extension = path.extname(file.name) || `.${file.type.split("/")[1]}`;
   const safeName = `${Date.now()}-${crypto.randomUUID()}${extension.toLowerCase()}`;
+
+  if (process.env.BLOB_READ_WRITE_TOKEN) {
+    const blob = await put(`animal-photos/${safeName}`, file, {
+      access: "public",
+      addRandomSuffix: false
+    });
+    return blob.url;
+  }
+
+  await mkdir(uploadDir, { recursive: true });
   const diskPath = path.join(uploadDir, safeName);
   const bytes = Buffer.from(await file.arrayBuffer());
   await writeFile(diskPath, bytes);
