@@ -1,0 +1,26 @@
+export type AnimalOption = {
+  id: string;
+  name: string | null;
+  tagCode: string;
+  species: "cattle" | "goat";
+  sex: "male" | "female";
+  dateOfBirth: string | Date;
+  photoUrl?: string | null;
+  status?: "active" | "sold" | "deceased";
+};
+
+export type Treatment = {
+  id: string;
+  date: string | Date;
+  type: "vaccination" | "deworming" | "illness" | "injury" | "checkup" | "other";
+  description: string;
+  medicineUsed: string | null;
+  dosage: string | null;
+  administeredBy: string | null;
+  nextDueDate: string | Date | null;
+};
+
+export type PedigreeAnimal = AnimalOption & {
+  sire?: PedigreeAnimal | null;
+  dam?: PedigreeAnimal | null;
+};

@@ -1,0 +1,111 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Species {
+  cattle
+  goat
+}
+
+enum Sex {
+  male
+  female
+}
+
+enum AnimalStatus {
+  active
+  sold
+  deceased
+}
+
+enum TreatmentType {
+  vaccination
+  deworming
+  illness
+  injury
+  checkup
+  other
+}
+
+model Animal {
+  id          String         @id @default(cuid())
+  name        String?
+  tagCode     String         @unique
+  species     Species
+  sex         Sex
+  dateOfBirth DateTime
+  photoUrl    String?
+  sireId      String?
+  damId       String?
+  status      AnimalStatus   @default(active)
+  notes       String?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  sire      Animal? @relation("SireChildren", fields: [sireId], references: [id], onDelete: SetNull)
+  dam       Animal? @relation("DamChildren", fields: [damId], references: [id], onDelete: SetNull)
+  sired     Animal[] @relation("SireChildren")
+  birthed   Animal[] @relation("DamChildren")
+  treatments TreatmentRecord[]
+  birthEventsAsDam BirthRecord[] @relation("BirthDam")
+  birthEventsAsSire BirthRecord[] @relation("BirthSire")
+  offspringBirthLinks BirthRecordOffspring[]
+
+  @@index([species])
+  @@index([sireId])
+  @@index([damId])
+  @@index([status])
+}
+
+model TreatmentRecord {
+  id             String        @id @default(cuid())
+  animalId       String
+  date           DateTime
+  type           TreatmentType
+  description    String
+  medicineUsed   String?
+  dosage         String?
+  administeredBy String?
+  nextDueDate    DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  animal Animal @relation(fields: [animalId], references: [id], onDelete: Cascade)
+
+  @@index([animalId])
+  @@index([nextDueDate])
+}
+
+model BirthRecord {
+  id        String   @id @default(cuid())
+  damId     String
+  sireId    String?
+  birthDate DateTime
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  dam       Animal @relation("BirthDam", fields: [damId], references: [id], onDelete: Cascade)
+  sire      Animal? @relation("BirthSire", fields: [sireId], references: [id], onDelete: SetNull)
+  offspring BirthRecordOffspring[]
+
+  @@index([damId])
+  @@index([sireId])
+  @@index([birthDate])
+}
+
+model BirthRecordOffspring {
+  birthRecordId String
+  animalId      String
+
+  birthRecord BirthRecord @relation(fields: [birthRecordId], references: [id], onDelete: Cascade)
+  animal      Animal      @relation(fields: [animalId], references: [id], onDelete: Cascade)
+
+  @@id([birthRecordId, animalId])
+  @@index([animalId])
+}

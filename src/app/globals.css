@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: light; }
+body { margin: 0; }
+
+@layer components {
+  .input { @apply w-full rounded-md border border-stone-300 bg-white px-3 py-2 text-sm outline-none ring-field-grass/30 transition focus:border-field-grass focus:ring-2; }
+  .field-label { @apply space-y-1 text-sm font-medium text-field-ink; }
+  .button-primary { @apply inline-flex items-center justify-center rounded-md bg-field-moss px-4 py-2 text-sm font-semibold text-white transition hover:bg-field-ink disabled:cursor-not-allowed disabled:opacity-60; }
+  .button-secondary { @apply inline-flex items-center justify-center rounded-md border border-stone-300 bg-white px-3 py-2 text-sm font-semibold text-field-ink transition hover:border-field-grass; }
+  .button-danger { @apply inline-flex items-center justify-center rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-100; }
+  .nav-link { @apply rounded-md px-3 py-2 text-stone-700 hover:bg-field-mist hover:text-field-ink; }
+  .section-title { @apply text-xl font-bold text-field-ink; }
+  .tree-box { @apply flex min-h-20 min-w-36 flex-col items-center justify-center rounded-md border border-stone-300 bg-white p-3 text-center text-sm shadow-sm; }
+}
