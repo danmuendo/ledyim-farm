@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { Search, SlidersHorizontal } from "lucide-react";
 import { useMemo, useState } from "react";
 import { AnimalOption } from "@/lib/types";
 import { animalLabel, formatDate, speciesRank } from "@/lib/format";
@@ -31,33 +32,33 @@ export function AnimalGrid({ animals }: { animals: AnimalOption[] }) {
 
   return (
     <div className="space-y-5">
-      <div className="grid gap-3 rounded-md border border-stone-200 bg-white p-3 shadow-soft sm:grid-cols-2 lg:grid-cols-4">
-        <input className="input" placeholder="Search name or tag" value={search} onChange={(event) => setSearch(event.target.value)} />
-        <select className="input" value={species} onChange={(event) => setSpecies(event.target.value)}>
-          <option value="">All species</option><option value="cattle">Cattle</option><option value="goat">Goats</option>
-        </select>
-        <select className="input" value={sex} onChange={(event) => setSex(event.target.value)}>
-          <option value="">All sex</option><option value="female">Female</option><option value="male">Male</option>
-        </select>
-        <select className="input" value={status} onChange={(event) => setStatus(event.target.value)}>
-          <option value="">All status</option><option value="active">Active</option><option value="sold">Sold</option><option value="deceased">Deceased</option>
-        </select>
+      <div className="surface p-3 sm:p-4">
+        <div className="mb-3 flex items-center gap-2 text-sm font-bold text-field-soil"><SlidersHorizontal size={17} /> Filters</div>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr]">
+          <label className="relative"><Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-field-moss/65" size={17} /><input className="input pl-9" placeholder="Search name or tag" value={search} onChange={(event) => setSearch(event.target.value)} /></label>
+          <select className="input" value={species} onChange={(event) => setSpecies(event.target.value)}><option value="">All species</option><option value="cattle">Cattle</option><option value="goat">Goats</option></select>
+          <select className="input" value={sex} onChange={(event) => setSex(event.target.value)}><option value="">All sex</option><option value="female">Female</option><option value="male">Male</option></select>
+          <select className="input" value={status} onChange={(event) => setStatus(event.target.value)}><option value="">All status</option><option value="active">Active</option><option value="sold">Sold</option><option value="deceased">Deceased</option></select>
+        </div>
       </div>
+
+      <div className="flex items-center justify-between text-sm text-field-soil/70"><span>{filtered.length} of {animals.length} animals</span><span className="hidden sm:inline">Cattle before goats - oldest first</span></div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {filtered.map((animal) => (
-          <Link key={animal.id} href={`/animals/${animal.id}`} className="overflow-hidden rounded-md border border-stone-200 bg-white shadow-soft transition hover:-translate-y-0.5 hover:border-field-grass">
+          <Link key={animal.id} href={`/animals/${animal.id}`} className="group overflow-hidden rounded-xl border border-white/80 bg-white/90 shadow-soft ring-1 ring-field-soil/5 transition hover:-translate-y-1 hover:shadow-lift">
             <div className="relative aspect-[4/3] bg-field-mist">
-              {animal.photoUrl ? <Image src={animal.photoUrl} alt={animalLabel(animal)} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw" className="object-cover" /> : <div className="flex h-full items-center justify-center text-sm font-semibold uppercase tracking-wide text-field-moss">{animal.species}</div>}
+              {animal.photoUrl ? <Image src={animal.photoUrl} alt={animalLabel(animal)} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw" className="object-cover transition duration-300 group-hover:scale-105" /> : <div className="flex h-full flex-col items-center justify-center gap-2 bg-gradient-to-br from-field-mist to-white text-field-moss"><span className="text-4xl font-black uppercase">{animal.species.slice(0, 1)}</span><span className="text-xs font-bold uppercase tracking-[0.18em]">{animal.species}</span></div>}
+              <div className="absolute left-3 top-3 flex gap-2"><span className="badge bg-white/90">{animal.species}</span><span className="badge-warm bg-white/90">{animal.status}</span></div>
             </div>
-            <div className="space-y-1 p-4">
-              <div className="flex items-start justify-between gap-2"><h2 className="font-semibold text-field-ink">{animalLabel(animal)}</h2><span className="rounded bg-field-mist px-2 py-1 text-xs capitalize text-field-moss">{animal.status}</span></div>
-              <p className="text-sm text-stone-600">Born {formatDate(animal.dateOfBirth)}</p>
+            <div className="space-y-3 p-4">
+              <div><h2 className="text-lg font-black leading-tight text-field-soil">{animal.name || animal.tagCode}</h2>{animal.name && <p className="text-sm font-semibold text-field-moss">{animal.tagCode}</p>}</div>
+              <div className="grid grid-cols-2 gap-2 text-sm"><div className="surface-muted px-3 py-2"><p className="text-xs font-bold uppercase text-field-moss/70">Born</p><p className="font-semibold text-field-soil">{formatDate(animal.dateOfBirth)}</p></div><div className="surface-muted px-3 py-2"><p className="text-xs font-bold uppercase text-field-moss/70">Sex</p><p className="font-semibold capitalize text-field-soil">{animal.sex}</p></div></div>
             </div>
           </Link>
         ))}
       </div>
-      {filtered.length === 0 && <p className="rounded-md border border-dashed border-stone-300 p-8 text-center text-stone-600">No animals match those filters.</p>}
+      {filtered.length === 0 && <p className="surface border-dashed p-8 text-center text-stone-600">No animals match those filters.</p>}
     </div>
   );
 }

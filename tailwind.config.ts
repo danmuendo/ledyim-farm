@@ -7,15 +7,20 @@ const config: Config = {
       colors: {
         field: {
           ink: "#1f2933",
-          moss: "#566246",
-          grass: "#6f8f52",
-          straw: "#d6b36a",
-          clay: "#ad6b4f",
+          soil: "#3f3328",
+          moss: "#4f6640",
+          grass: "#7c985f",
+          leaf: "#8ea86b",
+          straw: "#d7b46a",
+          clay: "#b66f52",
+          sky: "#8fb8bd",
+          cream: "#fbfaf5",
           mist: "#eef3ed"
         }
       },
       boxShadow: {
-        soft: "0 10px 30px rgba(31, 41, 51, 0.08)"
+        soft: "0 12px 32px rgba(63, 51, 40, 0.08)",
+        lift: "0 18px 45px rgba(63, 51, 40, 0.14)"
       }
     }
   },
