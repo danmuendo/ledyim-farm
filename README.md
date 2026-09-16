@@ -18,6 +18,7 @@ A small full-stack livestock record tool for cattle and goats, built with Next.j
 
 - Node.js 20+
 - PostgreSQL database. The app can use Neon or the local Docker database below.
+- Cloudinary account for persistent animal photo uploads in production.
 - Docker Desktop or another Docker runtime, only if you want local PostgreSQL.
 
 ## Setup With Neon
@@ -26,10 +27,12 @@ A small full-stack livestock record tool for cattle and goats, built with Next.j
 
 ```bash
 DATABASE_URL="postgresql://USER:PASSWORD@HOST/neondb?sslmode=require&channel_binding=require"
-BLOB_READ_WRITE_TOKEN=""
+CLOUDINARY_CLOUD_NAME="your-cloud-name"
+CLOUDINARY_API_KEY="your-api-key"
+CLOUDINARY_API_SECRET="your-api-secret"
 ```
 
-The current local `.env` is configured to use your Neon database. `BLOB_READ_WRITE_TOKEN` is optional locally; without it, uploads are stored under `public/uploads`.
+The current local `.env` is configured to use your Neon database. Cloudinary variables are optional locally; without them, uploads are stored under `public/uploads`.
 
 2. Install dependencies:
 
@@ -57,6 +60,13 @@ npm run dev
 
 Open `http://localhost:3000`.
 
+## Cloudinary Setup
+
+1. Create or sign in to a Cloudinary account.
+2. Open the Cloudinary dashboard and copy your `cloud_name`, `api_key`, and `api_secret`.
+3. Add them to `.env` locally and to Vercel Environment Variables for deployment.
+4. Uploaded animal photos will be stored in the Cloudinary folder `ledyim-farm/animal-photos`.
+
 ## Deploy To Vercel
 
 1. Import `https://github.com/danmuendo/ledyim-farm.git` in the Vercel dashboard.
@@ -65,13 +75,14 @@ Open `http://localhost:3000`.
 
 ```bash
 DATABASE_URL="postgresql://USER:PASSWORD@HOST/neondb?sslmode=require&channel_binding=require"
-BLOB_READ_WRITE_TOKEN="your-vercel-blob-token"
+CLOUDINARY_CLOUD_NAME="your-cloud-name"
+CLOUDINARY_API_KEY="your-api-key"
+CLOUDINARY_API_SECRET="your-api-secret"
 ```
 
-4. Create or connect a Vercel Blob store for persistent animal photos.
-5. Deploy. Future pushes to `main` will create production deployments.
+4. Deploy. Future pushes to `main` will create production deployments.
 
-The database migration has already been applied to your Neon database, and the seed script has already been run once. Do not run the seed script on production again unless you want it to reset the animal, treatment, and birth-record tables.
+The database migrations have already been applied to your Neon database, and the seed script has already been run once. Do not run the seed script on production again unless you want it to reset the animal, treatment, and birth-record tables.
 
 ## Optional Local PostgreSQL
 
@@ -102,9 +113,8 @@ For a hosted database, prefer `npx prisma migrate deploy` when applying checked-
 
 ## Image Uploads
 
-In local development without `BLOB_READ_WRITE_TOKEN`, uploaded animal photos are stored under `public/uploads`. On Vercel, set `BLOB_READ_WRITE_TOKEN` so uploaded files are stored in Vercel Blob and remain available after deployments.
+In local development without Cloudinary credentials, uploaded animal photos are stored under `public/uploads`. In production, set the Cloudinary environment variables so uploaded files are stored in Cloudinary and remain available after deployments.
 
 ## Notes
 
 The seed script resets the livestock, treatment, and birth-record tables before inserting sample data. Use it only for local development data you are comfortable replacing.
-
